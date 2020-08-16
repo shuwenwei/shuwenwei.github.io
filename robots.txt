@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://shuwenwei.github.io/sitemap.xml
