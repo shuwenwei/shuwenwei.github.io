@@ -6,7 +6,7 @@
     <description>Recent content on Even - A super concise theme for Hugo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 16 Aug 2020 22:30:07 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 24 Aug 2020 23:43:01 +0800</lastBuildDate>
     
 	<atom:link href="https://shuwenwei.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -29,6 +29,15 @@
       <description>Hugo is a static site engine written in Go.
 It makes use of a variety of open source projects including:
  Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>Spring Ioc源码阅读</title>
+      <link>https://shuwenwei.github.io/post/spring-ioc/</link>
+      <pubDate>Mon, 24 Aug 2020 23:43:01 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/post/spring-ioc/</guid>
+      <description>ClassPathXmlApplicationContext 1 2 3 public ClassPathXmlApplicationContext(String configLocation) throws BeansException { this(new String[] {configLocation}, true, null); } 1 2 3 4 5 6 7 8 9 10 11 public ClassPathXmlApplicationContext( String[] configLocations, boolean refresh, @Nullable ApplicationContext parent) throws BeansException { super(parent); // 遍历configLocations，处理每一个元素，替换其</description>
     </item>
     
     <item>
