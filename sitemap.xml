@@ -9,8 +9,64 @@
   </url>
   
   <url>
+    <loc>https://shuwenwei.github.io/categories/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/tags/java/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/categories/java/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://shuwenwei.github.io/post/</loc>
-    <lastmod>2020-08-24T23:43:01+08:00</lastmod>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/tags/spring/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/post/spring-aop/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/tags/spring-aop/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://shuwenwei.github.io/tags/</loc>
+    <lastmod>2020-08-28T14:55:41+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -23,7 +79,7 @@
   </url>
   
   <url>
-    <loc>https://shuwenwei.github.io/</loc>
+    <loc>https://shuwenwei.github.io/tags/spring-ioc/</loc>
     <lastmod>2020-08-24T23:43:01+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -39,18 +95,6 @@
   <url>
     <loc>https://shuwenwei.github.io/content/</loc>
     <lastmod>2017-08-28T21:41:52+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shuwenwei.github.io/categories/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shuwenwei.github.io/tags/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -6,10 +6,19 @@
     <description>Recent content in Posts on sww的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 24 Aug 2020 23:43:01 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2020 14:55:41 +0800</lastBuildDate>
     
 	<atom:link href="https://shuwenwei.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Aop</title>
+      <link>https://shuwenwei.github.io/post/spring-aop/</link>
+      <pubDate>Fri, 28 Aug 2020 14:55:41 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/post/spring-aop/</guid>
+      <description>加载BeanDefinition 加载BeanDefinition时，在DefaultBeanDefinitionDocumentReader</description>
+    </item>
     
     <item>
       <title>Spring Ioc源码阅读</title>

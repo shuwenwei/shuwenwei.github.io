@@ -54,7 +54,7 @@
 
 
 
-<meta itemprop="keywords" content="" />
+<meta itemprop="keywords" content="spring,spring-ioc,java," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Spring Ioc源码阅读"/>
 <meta name="twitter:description" content="ClassPathXmlApplicationContext 1 2 3 public ClassPathXmlApplicationContext(String configLocation) throws BeansException { this(new String[] {configLocation}, true, null); } 1 2 3 4 5 6 7 8 9 10 11 public ClassPathXmlApplicationContext( String[] configLocations, boolean refresh, @Nullable ApplicationContext parent) throws BeansException { super(parent); // 遍历configLocations，处理每一个元素，替换其"/>
@@ -128,7 +128,9 @@
 
       <div class="post-meta">
         <span class="post-time"> 2020-08-24 </span>
-        
+        <div class="post-category">
+            <a href="/categories/java/"> java </a>
+            </div>
           <span class="more-meta"> 约 13735 字 </span>
           <span class="more-meta"> 预计阅读 28 分钟 </span>
         <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
@@ -3712,9 +3714,17 @@
   
 </div>
 <footer class="post-footer">
-      
+      <div class="post-tags">
+          <a href="/tags/spring/">spring</a>
+          <a href="/tags/spring-ioc/">spring-ioc</a>
+          <a href="/tags/java/">java</a>
+          </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/spring-aop/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Spring Aop</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         <a class="next" href="/post/1/">
             <span class="next-text nav-default">修改科大奥锐物理仿真实验分数</span>
             <span class="next-text nav-mobile">下一篇</span>

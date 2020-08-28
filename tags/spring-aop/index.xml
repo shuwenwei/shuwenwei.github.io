@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>spring-aop on sww的博客</title>
+    <link>https://shuwenwei.github.io/tags/spring-aop/</link>
+    <description>Recent content in spring-aop on sww的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 28 Aug 2020 14:55:41 +0800</lastBuildDate>
+    
+	<atom:link href="https://shuwenwei.github.io/tags/spring-aop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Aop</title>
+      <link>https://shuwenwei.github.io/post/spring-aop/</link>
+      <pubDate>Fri, 28 Aug 2020 14:55:41 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/post/spring-aop/</guid>
+      <description>加载BeanDefinition 加载BeanDefinition时，在DefaultBeanDefinitionDocumentReader</description>
+    </item>
+    
+  </channel>
+</rss>

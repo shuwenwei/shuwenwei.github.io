@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>sww的博客</title>
-    <link>https://shuwenwei.github.io/</link>
-    <description>Recent content on sww的博客</description>
+    <title>java on sww的博客</title>
+    <link>https://shuwenwei.github.io/categories/java/</link>
+    <description>Recent content in java on sww的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Fri, 28 Aug 2020 14:55:41 +0800</lastBuildDate>
     
-	<atom:link href="https://shuwenwei.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://shuwenwei.github.io/categories/java/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>About</title>
-      <link>https://shuwenwei.github.io/content/about/</link>
-      <pubDate>Sun, 20 Aug 2017 21:38:52 +0800</pubDate>
-      
-      <guid>https://shuwenwei.github.io/content/about/</guid>
-      <description>Hugo is a static site engine written in Go.
-It makes use of a variety of open source projects including:
- Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
-    </item>
     
     <item>
       <title>Spring Aop</title>
@@ -38,15 +27,6 @@ It makes use of a variety of open source projects including:
       
       <guid>https://shuwenwei.github.io/post/spring-ioc/</guid>
       <description>ClassPathXmlApplicationContext 1 2 3 public ClassPathXmlApplicationContext(String configLocation) throws BeansException { this(new String[] {configLocation}, true, null); } 1 2 3 4 5 6 7 8 9 10 11 public ClassPathXmlApplicationContext( String[] configLocations, boolean refresh, @Nullable ApplicationContext parent) throws BeansException { super(parent); // 遍历configLocations，处理每一个元素，替换其</description>
-    </item>
-    
-    <item>
-      <title>修改科大奥锐物理仿真实验分数</title>
-      <link>https://shuwenwei.github.io/post/1/</link>
-      <pubDate>Sun, 16 Aug 2020 22:30:07 +0800</pubDate>
-      
-      <guid>https://shuwenwei.github.io/post/1/</guid>
-      <description>修改成绩 开始实验前打开fiddler，开始实验后，可以看到5条记录 其中可以找到一条，可以发现Score在开始实验时初始化为0分 在下方选中XM</description>
     </item>
     
   </channel>

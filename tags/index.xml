@@ -6,9 +6,46 @@
     <description>Recent content in Tags on sww的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
+    <lastBuildDate>Fri, 28 Aug 2020 14:55:41 +0800</lastBuildDate>
     
 	<atom:link href="https://shuwenwei.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>java</title>
+      <link>https://shuwenwei.github.io/tags/java/</link>
+      <pubDate>Fri, 28 Aug 2020 14:55:41 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring</title>
+      <link>https://shuwenwei.github.io/tags/spring/</link>
+      <pubDate>Fri, 28 Aug 2020 14:55:41 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/tags/spring/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring-aop</title>
+      <link>https://shuwenwei.github.io/tags/spring-aop/</link>
+      <pubDate>Fri, 28 Aug 2020 14:55:41 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/tags/spring-aop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring-ioc</title>
+      <link>https://shuwenwei.github.io/tags/spring-ioc/</link>
+      <pubDate>Mon, 24 Aug 2020 23:43:01 +0800</pubDate>
+      
+      <guid>https://shuwenwei.github.io/tags/spring-ioc/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
