@@ -50,7 +50,7 @@
 <meta itemprop="description" content="spring-aop源码阅读">
 <meta itemprop="datePublished" content="2020-08-28T14:55:41+08:00" />
 <meta itemprop="dateModified" content="2020-08-28T14:55:41+08:00" />
-<meta itemprop="wordCount" content="5263">
+<meta itemprop="wordCount" content="7398">
 
 
 
@@ -131,8 +131,8 @@
         <div class="post-category">
             <a href="/categories/java/"> java </a>
             </div>
-          <span class="more-meta"> 约 5263 字 </span>
-          <span class="more-meta"> 预计阅读 11 分钟 </span>
+          <span class="more-meta"> 约 7398 字 </span>
+          <span class="more-meta"> 预计阅读 15 分钟 </span>
         <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
       </div>
     </header>
@@ -987,12 +987,18 @@
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">postProcessAfterInitialization</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="o">{</span>
    <span class="k">if</span> <span class="o">(</span><span class="n">bean</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">Object</span> <span class="n">cacheKey</span> <span class="o">=</span> <span class="n">getCacheKey</span><span class="o">(</span><span class="n">bean</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">beanName</span><span class="o">);</span>
-      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">earlyProxyReferences</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">)</span> <span class="o">!=</span> <span class="n">bean</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//创建cacheKey，如果有beanName且是FactoryBean的实现类，就在前缀加上&amp;，否则直接返回
+</span><span class="c1"></span>       <span class="c1">//如果没有beanName返回beanClass
+</span><span class="c1"></span>      <span class="n">Object</span> <span class="n">cacheKey</span> <span class="o">=</span> <span class="n">getCacheKey</span><span class="o">(</span><span class="n">bean</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">beanName</span><span class="o">);</span>
+       <span class="c1">//尝试从earlyProxyReference这个map由cacheKey获取已经生成的代理过的bean
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">earlyProxyReferences</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">)</span> <span class="o">!=</span> <span class="n">bean</span><span class="o">)</span> <span class="o">{</span>
           <span class="c1">//是否有必要代理
 </span><span class="c1"></span>         <span class="k">return</span> <span class="n">wrapIfNecessary</span><span class="o">(</span><span class="n">bean</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">cacheKey</span><span class="o">);</span>
       <span class="o">}</span>
@@ -1317,25 +1323,137 @@
 <h3 id="jdkdynamicaopproxy">JdkDynamicAopProxy</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">getProxy</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
    <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
       <span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="s">&#34;Creating JDK dynamic proxy: &#34;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">.</span><span class="na">getTargetSource</span><span class="o">());</span>
    <span class="o">}</span>
-   <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">proxiedInterfaces</span> <span class="o">=</span> <span class="n">AopProxyUtils</span><span class="o">.</span><span class="na">completeProxiedInterfaces</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-   <span class="n">findDefinedEqualsAndHashCodeMethods</span><span class="o">(</span><span class="n">proxiedInterfaces</span><span class="o">);</span>
+    <span class="c1">//确定被代理的接口，如果其中不存在Advised和SpringProxy接口，会在最后加上
+</span><span class="c1"></span>    <span class="c1">//第二个参数确定是否加上DecoratingProxy
+</span><span class="c1"></span>   <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">proxiedInterfaces</span> <span class="o">=</span> <span class="n">AopProxyUtils</span><span class="o">.</span><span class="na">completeProxiedInterfaces</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="c1">//确定有没有定义equals和hashCode方法
+</span><span class="c1"></span>   <span class="n">findDefinedEqualsAndHashCodeMethods</span><span class="o">(</span><span class="n">proxiedInterfaces</span><span class="o">);</span>
     <span class="c1">//返回代理对象
 </span><span class="c1"></span>   <span class="k">return</span> <span class="n">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span><span class="n">classLoader</span><span class="o">,</span> <span class="n">proxiedInterfaces</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">completeProxiedInterfaces</span><span class="o">(</span><span class="n">AdvisedSupport</span> <span class="n">advised</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">decoratingProxy</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">specifiedInterfaces</span> <span class="o">=</span> <span class="n">advised</span><span class="o">.</span><span class="na">getProxiedInterfaces</span><span class="o">();</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">specifiedInterfaces</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// No user-specified interfaces: check whether target class is an interface.
+</span><span class="c1"></span>      <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">advised</span><span class="o">.</span><span class="na">getTargetClass</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">targetClass</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">targetClass</span><span class="o">.</span><span class="na">isInterface</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">advised</span><span class="o">.</span><span class="na">setInterfaces</span><span class="o">(</span><span class="n">targetClass</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">Proxy</span><span class="o">.</span><span class="na">isProxyClass</span><span class="o">(</span><span class="n">targetClass</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">advised</span><span class="o">.</span><span class="na">setInterfaces</span><span class="o">(</span><span class="n">targetClass</span><span class="o">.</span><span class="na">getInterfaces</span><span class="o">());</span>
+         <span class="o">}</span>
+         <span class="n">specifiedInterfaces</span> <span class="o">=</span> <span class="n">advised</span><span class="o">.</span><span class="na">getProxiedInterfaces</span><span class="o">();</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="kt">boolean</span> <span class="n">addSpringProxy</span> <span class="o">=</span> <span class="o">!</span><span class="n">advised</span><span class="o">.</span><span class="na">isInterfaceProxied</span><span class="o">(</span><span class="n">SpringProxy</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="kt">boolean</span> <span class="n">addAdvised</span> <span class="o">=</span> <span class="o">!</span><span class="n">advised</span><span class="o">.</span><span class="na">isOpaque</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">advised</span><span class="o">.</span><span class="na">isInterfaceProxied</span><span class="o">(</span><span class="n">Advised</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="kt">boolean</span> <span class="n">addDecoratingProxy</span> <span class="o">=</span> <span class="o">(</span><span class="n">decoratingProxy</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">advised</span><span class="o">.</span><span class="na">isInterfaceProxied</span><span class="o">(</span><span class="n">DecoratingProxy</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+    <span class="c1">//确定非用户指定的接口的数量，即需要自动添加的接口数量
+</span><span class="c1"></span>   <span class="kt">int</span> <span class="n">nonUserIfcCount</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">addSpringProxy</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">nonUserIfcCount</span><span class="o">++;</span>
+   <span class="o">}</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">addAdvised</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">nonUserIfcCount</span><span class="o">++;</span>
+   <span class="o">}</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">addDecoratingProxy</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">nonUserIfcCount</span><span class="o">++;</span>
+   <span class="o">}</span>
+    <span class="c1">//确定总长度，创建新的数组
+</span><span class="c1"></span>   <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">proxiedInterfaces</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Class</span><span class="o">&lt;?&gt;[</span><span class="n">specifiedInterfaces</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">nonUserIfcCount</span><span class="o">];</span>
+    <span class="c1">//将specifiedInterfaces复制到proxiedInterfaces中
+</span><span class="c1"></span>   <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">specifiedInterfaces</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">proxiedInterfaces</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">specifiedInterfaces</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+   <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">specifiedInterfaces</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+    <span class="c1">//添加SpringProxy接口，SpringProxy接口没有方法，用于做标记判断是否是Spring生成的代理
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">addSpringProxy</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">proxiedInterfaces</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">SpringProxy</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+      <span class="n">index</span><span class="o">++;</span>
+   <span class="o">}</span>
+    <span class="c1">//添加Advised接口，Advised接口可以使生成的代理对象能被动态地修改
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">addAdvised</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">proxiedInterfaces</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">Advised</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+      <span class="n">index</span><span class="o">++;</span>
+   <span class="o">}</span>
+    <span class="c1">//添加DecoratingProxy接口
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">addDecoratingProxy</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">proxiedInterfaces</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">DecoratingProxy</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="k">return</span> <span class="n">proxiedInterfaces</span><span class="o">;</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -1437,6 +1555,7 @@
 </span><span class="lnt">93
 </span><span class="lnt">94
 </span><span class="lnt">95
+</span><span class="lnt">96
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
@@ -1461,7 +1580,8 @@
          <span class="c1">// There is only getDecoratedClass() declared -&gt; dispatch to proxy config.
 </span><span class="c1"></span>         <span class="k">return</span> <span class="n">AopProxyUtils</span><span class="o">.</span><span class="na">ultimateTargetClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">);</span>
       <span class="o">}</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">.</span><span class="na">opaque</span> <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">().</span><span class="na">isInterface</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
+       <span class="c1">//如果直接实现了Advised接口，不会增强对象
+</span><span class="c1"></span>      <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">advised</span><span class="o">.</span><span class="na">opaque</span> <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">().</span><span class="na">isInterface</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
             <span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">().</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">Advised</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
          <span class="c1">// Service invocations on ProxyConfig with the proxy config...
 </span><span class="c1"></span>          <span class="c1">//使用反射执行方法
@@ -1499,11 +1619,11 @@
       <span class="o">}</span>
       <span class="k">else</span> <span class="o">{</span>
          <span class="c1">// We need to create a method invocation...
-</span><span class="c1"></span>          <span class="c1">//创建一个方法调用对象
+</span><span class="c1"></span>          <span class="c1">//创建一个MethodInvocation对象
 </span><span class="c1"></span>         <span class="n">MethodInvocation</span> <span class="n">invocation</span> <span class="o">=</span>
                <span class="k">new</span> <span class="n">ReflectiveMethodInvocation</span><span class="o">(</span><span class="n">proxy</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
          <span class="c1">// Proceed to the joinpoint through the interceptor chain.
-</span><span class="c1"></span>          <span class="c1">//调用各个proceed
+</span><span class="c1"></span>          <span class="c1">//递归调用各个proceed
 </span><span class="c1"></span>         <span class="n">retVal</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
       <span class="o">}</span>
 
@@ -1532,6 +1652,335 @@
          <span class="c1">// Restore old proxy.
 </span><span class="c1"></span>         <span class="n">AopContext</span><span class="o">.</span><span class="na">setCurrentProxy</span><span class="o">(</span><span class="n">oldProxy</span><span class="o">);</span>
       <span class="o">}</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>getInterceptorsAndDynamicInterceptionAdvice方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getInterceptorsAndDynamicInterceptionAdvice</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//由method得到methodCacheKey
+</span><span class="c1"></span>   <span class="n">MethodCacheKey</span> <span class="n">cacheKey</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MethodCacheKey</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+    <span class="c1">//尝试获得methodCache
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">cached</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">methodCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">);</span>
+    <span class="c1">//如果不存在
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">cached</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//获取拦截链
+</span><span class="c1"></span>      <span class="n">cached</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">advisorChainFactory</span><span class="o">.</span><span class="na">getInterceptorsAndDynamicInterceptionAdvice</span><span class="o">(</span>
+            <span class="k">this</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
+       <span class="c1">//添加到缓存中
+</span><span class="c1"></span>      <span class="k">this</span><span class="o">.</span><span class="na">methodCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">,</span> <span class="n">cached</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">return</span> <span class="n">cached</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getInterceptorsAndDynamicInterceptionAdvice</span><span class="o">(</span>
+      <span class="n">Advised</span> <span class="n">config</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="c1">// This is somewhat tricky... We have to process introductions first,
+</span><span class="c1"></span>   <span class="c1">// but we need to preserve order in the ultimate list.
+</span><span class="c1"></span>   <span class="n">AdvisorAdapterRegistry</span> <span class="n">registry</span> <span class="o">=</span> <span class="n">GlobalAdvisorAdapterRegistry</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+   <span class="n">Advisor</span><span class="o">[]</span> <span class="n">advisors</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="na">getAdvisors</span><span class="o">();</span>
+   <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">interceptorList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">advisors</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+   <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">actualClass</span> <span class="o">=</span> <span class="o">(</span><span class="n">targetClass</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">targetClass</span> <span class="o">:</span> <span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+   <span class="n">Boolean</span> <span class="n">hasIntroductions</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="c1">//遍历所有advisor
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">Advisor</span> <span class="n">advisor</span> <span class="o">:</span> <span class="n">advisors</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//如果是PointcutAdvisor的实例
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">advisor</span> <span class="k">instanceof</span> <span class="n">PointcutAdvisor</span><span class="o">)</span> <span class="o">{</span>
+         <span class="c1">// Add it conditionally.
+</span><span class="c1"></span>         <span class="n">PointcutAdvisor</span> <span class="n">pointcutAdvisor</span> <span class="o">=</span> <span class="o">(</span><span class="n">PointcutAdvisor</span><span class="o">)</span> <span class="n">advisor</span><span class="o">;</span>
+          <span class="c1">//匹配class
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">isPreFiltered</span><span class="o">()</span> <span class="o">||</span> <span class="n">pointcutAdvisor</span><span class="o">.</span><span class="na">getPointcut</span><span class="o">().</span><span class="na">getClassFilter</span><span class="o">().</span><span class="na">matches</span><span class="o">(</span><span class="n">actualClass</span><span class="o">))</span> <span class="o">{</span>
+             <span class="c1">//获得methodMatcher
+</span><span class="c1"></span>            <span class="n">MethodMatcher</span> <span class="n">mm</span> <span class="o">=</span> <span class="n">pointcutAdvisor</span><span class="o">.</span><span class="na">getPointcut</span><span class="o">().</span><span class="na">getMethodMatcher</span><span class="o">();</span>
+            <span class="kt">boolean</span> <span class="n">match</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">mm</span> <span class="k">instanceof</span> <span class="n">IntroductionAwareMethodMatcher</span><span class="o">)</span> <span class="o">{</span>
+               <span class="k">if</span> <span class="o">(</span><span class="n">hasIntroductions</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="n">hasIntroductions</span> <span class="o">=</span> <span class="n">hasMatchingIntroductions</span><span class="o">(</span><span class="n">advisors</span><span class="o">,</span> <span class="n">actualClass</span><span class="o">);</span>
+               <span class="o">}</span>
+               <span class="n">match</span> <span class="o">=</span> <span class="o">((</span><span class="n">IntroductionAwareMethodMatcher</span><span class="o">)</span> <span class="n">mm</span><span class="o">).</span><span class="na">matches</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">actualClass</span><span class="o">,</span> <span class="n">hasIntroductions</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="o">{</span>
+               <span class="n">match</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">actualClass</span><span class="o">);</span>
+            <span class="o">}</span>
+             <span class="c1">//如果匹配
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">match</span><span class="o">)</span> <span class="o">{</span>
+               <span class="n">MethodInterceptor</span><span class="o">[]</span> <span class="n">interceptors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getInterceptors</span><span class="o">(</span><span class="n">advisor</span><span class="o">);</span>
+                <span class="c1">//判断methodMatcher是否为动态的
+</span><span class="c1"></span>               <span class="k">if</span> <span class="o">(</span><span class="n">mm</span><span class="o">.</span><span class="na">isRuntime</span><span class="o">())</span> <span class="o">{</span>
+                  <span class="c1">// Creating a new object instance in the getInterceptors() method
+</span><span class="c1"></span>                  <span class="c1">// isn&#39;t a problem as we normally cache created chains.
+</span><span class="c1"></span>                   <span class="c1">//遍历所有MethodInterceptor，添加到interceptorList中
+</span><span class="c1"></span>                  <span class="k">for</span> <span class="o">(</span><span class="n">MethodInterceptor</span> <span class="n">interceptor</span> <span class="o">:</span> <span class="n">interceptors</span><span class="o">)</span> <span class="o">{</span>
+                      <span class="c1">//InterceptorAndDynamicMethodMatcher 动态的拦截器
+</span><span class="c1"></span>                     <span class="n">interceptorList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">InterceptorAndDynamicMethodMatcher</span><span class="o">(</span><span class="n">interceptor</span><span class="o">,</span> <span class="n">mm</span><span class="o">));</span>
+                  <span class="o">}</span>
+               <span class="o">}</span>
+               <span class="k">else</span> <span class="o">{</span>
+                   <span class="c1">//直接添加methodInterceptor
+</span><span class="c1"></span>                  <span class="n">interceptorList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">interceptors</span><span class="o">));</span>
+               <span class="o">}</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+       <span class="c1">//如果是IntroductionAdvisor的实例，IntroductionAdvisor只能应用于类级别
+</span><span class="c1"></span>      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">advisor</span> <span class="k">instanceof</span> <span class="n">IntroductionAdvisor</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">IntroductionAdvisor</span> <span class="n">ia</span> <span class="o">=</span> <span class="o">(</span><span class="n">IntroductionAdvisor</span><span class="o">)</span> <span class="n">advisor</span><span class="o">;</span>
+          <span class="c1">//匹配class
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">isPreFiltered</span><span class="o">()</span> <span class="o">||</span> <span class="n">ia</span><span class="o">.</span><span class="na">getClassFilter</span><span class="o">().</span><span class="na">matches</span><span class="o">(</span><span class="n">actualClass</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">Interceptor</span><span class="o">[]</span> <span class="n">interceptors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getInterceptors</span><span class="o">(</span><span class="n">advisor</span><span class="o">);</span>
+            <span class="n">interceptorList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">interceptors</span><span class="o">));</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="n">Interceptor</span><span class="o">[]</span> <span class="n">interceptors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getInterceptors</span><span class="o">(</span><span class="n">advisor</span><span class="o">);</span>
+         <span class="n">interceptorList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">interceptors</span><span class="o">));</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="k">return</span> <span class="n">interceptorList</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>回到JdkDynamicAopProxy的invoke方法，当有拦截链时的情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"> <span class="k">else</span> <span class="o">{</span>
+         <span class="c1">// We need to create a method invocation...
+</span><span class="c1"></span>          <span class="c1">//创建一个MethodInvocation对象
+</span><span class="c1"></span>         <span class="n">MethodInvocation</span> <span class="n">invocation</span> <span class="o">=</span>
+               <span class="k">new</span> <span class="n">ReflectiveMethodInvocation</span><span class="o">(</span><span class="n">proxy</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
+         <span class="c1">// Proceed to the joinpoint through the interceptor chain.
+</span><span class="c1"></span>          <span class="c1">//递归调用各个proceed
+</span><span class="c1"></span>         <span class="n">retVal</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+      <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="nf">ReflectiveMethodInvocation</span><span class="o">(</span>
+      <span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">target</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">arguments</span><span class="o">,</span>
+      <span class="nd">@Nullable</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">interceptorsAndDynamicMethodMatchers</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="k">this</span><span class="o">.</span><span class="na">proxy</span> <span class="o">=</span> <span class="n">proxy</span><span class="o">;</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">;</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">targetClass</span> <span class="o">=</span> <span class="n">targetClass</span><span class="o">;</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">method</span> <span class="o">=</span> <span class="n">BridgeMethodResolver</span><span class="o">.</span><span class="na">findBridgedMethod</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">arguments</span> <span class="o">=</span> <span class="n">AopProxyUtils</span><span class="o">.</span><span class="na">adaptArgumentsIfNecessary</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">arguments</span><span class="o">);</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">interceptorsAndDynamicMethodMatchers</span> <span class="o">=</span> <span class="n">interceptorsAndDynamicMethodMatchers</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Object</span> <span class="nf">proceed</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Throwable</span><span class="o">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>ReflectiveMethodInvocation的proceed方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Object</span> <span class="nf">proceed</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+   <span class="c1">// We start with an index of -1 and increment early.
+</span><span class="c1"></span>    <span class="c1">//最初已设定this.currentInterceptor值为-1
+</span><span class="c1"></span>    <span class="c1">//interceptorsAndDynamicMethodMatchers是一个list
+</span><span class="c1"></span>    <span class="c1">//如果当前已经调用完了所有拦截器，直接调用方法
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">currentInterceptorIndex</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="na">interceptorsAndDynamicMethodMatchers</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">1</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//使用反射调用方法
+</span><span class="c1"></span>      <span class="k">return</span> <span class="n">invokeJoinpoint</span><span class="o">();</span>
+   <span class="o">}</span>
+
+    <span class="c1">//获取下一个拦截器或advice
+</span><span class="c1"></span>   <span class="n">Object</span> <span class="n">interceptorOrInterceptionAdvice</span> <span class="o">=</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">interceptorsAndDynamicMethodMatchers</span><span class="o">.</span><span class="na">get</span><span class="o">(++</span><span class="k">this</span><span class="o">.</span><span class="na">currentInterceptorIndex</span><span class="o">);</span>
+    <span class="c1">//如果是InterceptorAndDynamicMethodMatcher，在之前的getInterceptorsAndDynamicInterceptionAdvice方法中，
+</span><span class="c1"></span>    <span class="c1">//将一些满足一定条件的PointcutAdvisor的实例进行了new InterceptorAndDynamicMethodMatcher(interceptor, mm)后再添加进interceptorList中，
+</span><span class="c1"></span>    <span class="c1">//interceptorList后来作为构造函数参数传入ReflectiveMethodInvocation，也就是这里的interceptorAndDynamicMethodMatchers
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">interceptorOrInterceptionAdvice</span> <span class="k">instanceof</span> <span class="n">InterceptorAndDynamicMethodMatcher</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// Evaluate dynamic method matcher here: static part will already have
+</span><span class="c1"></span>      <span class="c1">// been evaluated and found to match.
+</span><span class="c1"></span>      <span class="n">InterceptorAndDynamicMethodMatcher</span> <span class="n">dm</span> <span class="o">=</span>
+            <span class="o">(</span><span class="n">InterceptorAndDynamicMethodMatcher</span><span class="o">)</span> <span class="n">interceptorOrInterceptionAdvice</span><span class="o">;</span>
+      <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">targetClass</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="na">targetClass</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+       <span class="c1">//动态匹配是否适用
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">dm</span><span class="o">.</span><span class="na">methodMatcher</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">arguments</span><span class="o">))</span> <span class="o">{</span>
+         <span class="k">return</span> <span class="n">dm</span><span class="o">.</span><span class="na">interceptor</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+          <span class="c1">//动态匹配失败
+</span><span class="c1"></span>         <span class="c1">// Dynamic matching failed.
+</span><span class="c1"></span>         <span class="c1">// Skip this interceptor and invoke the next in the chain.
+</span><span class="c1"></span>          <span class="c1">//递归调用
+</span><span class="c1"></span>         <span class="k">return</span> <span class="n">proceed</span><span class="o">();</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="c1">// It&#39;s an interceptor, so we just invoke it: The pointcut will have
+</span><span class="c1"></span>      <span class="c1">// been evaluated statically before this object was constructed.
+</span><span class="c1"></span>       <span class="c1">//调用MethodInterceptor的invoke方法
+</span><span class="c1"></span>      <span class="k">return</span> <span class="o">((</span><span class="n">MethodInterceptor</span><span class="o">)</span> <span class="n">interceptorOrInterceptionAdvice</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
    <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
