@@ -50,7 +50,7 @@
 <meta itemprop="description" content="ClassPathXmlApplicationContext 1 2 3 public ClassPathXmlApplicationContext(String configLocation) throws BeansException { this(new String[] {configLocation}, true, null); } 1 2 3 4 5 6 7 8 9 10 11 public ClassPathXmlApplicationContext( String[] configLocations, boolean refresh, @Nullable ApplicationContext parent) throws BeansException { super(parent); // 遍历configLocations，处理每一个元素，替换其">
 <meta itemprop="datePublished" content="2020-08-24T23:43:01+08:00" />
 <meta itemprop="dateModified" content="2020-08-24T23:43:01+08:00" />
-<meta itemprop="wordCount" content="15421">
+<meta itemprop="wordCount" content="21557">
 
 
 
@@ -131,8 +131,8 @@
         <div class="post-category">
             <a href="/categories/java/"> java </a>
             </div>
-          <span class="more-meta"> 约 15421 字 </span>
-          <span class="more-meta"> 预计阅读 31 分钟 </span>
+          <span class="more-meta"> 约 21557 字 </span>
+          <span class="more-meta"> 预计阅读 44 分钟 </span>
         <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> 次阅读 </span>
       </div>
     </header>
@@ -167,6 +167,7 @@
             <li><a href="#refresh-1">refresh</a>
               <ul>
                 <li><a href="#obtainbeanfactory">obtainBeanFactory</a></li>
+                <li><a href="#invokebeanfactorypostprocessors">invokeBeanFactoryPostProcessors</a></li>
               </ul>
             </li>
           </ul>
@@ -4350,6 +4351,2046 @@
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="n">ConfigurableListableBeanFactory</span> <span class="nf">getBeanFactory</span><span class="o">()</span> <span class="o">{</span>
     <span class="c1">//最开始就已经创建了，直接返回
 </span><span class="c1"></span>   <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">beanFactory</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="invokebeanfactorypostprocessors">invokeBeanFactoryPostProcessors</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">ConfigurableListableBeanFactory</span> <span class="n">beanFactory</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//获取BeanFactoryPostProcessors并执行其方法
+</span><span class="c1"></span>   <span class="n">PostProcessorRegistrationDelegate</span><span class="o">.</span><span class="na">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">,</span> <span class="n">getBeanFactoryPostProcessors</span><span class="o">());</span>
+
+   <span class="c1">// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
+</span><span class="c1"></span>   <span class="c1">// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getTempClassLoader</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">containsBean</span><span class="o">(</span><span class="n">LOAD_TIME_WEAVER_BEAN_NAME</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">beanFactory</span><span class="o">.</span><span class="na">addBeanPostProcessor</span><span class="o">(</span><span class="k">new</span> <span class="n">LoadTimeWeaverAwareProcessor</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">));</span>
+      <span class="n">beanFactory</span><span class="o">.</span><span class="na">setTempClassLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">ContextTypeMatchClassLoader</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBeanClassLoader</span><span class="o">()));</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">invokeBeanFactoryPostProcessors</span><span class="o">(</span>
+      <span class="n">ConfigurableListableBeanFactory</span> <span class="n">beanFactory</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanFactoryPostProcessor</span><span class="o">&gt;</span> <span class="n">beanFactoryPostProcessors</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="c1">// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+</span><span class="c1"></span>   <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">processedBeans</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">beanFactory</span> <span class="k">instanceof</span> <span class="n">BeanDefinitionRegistry</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">BeanDefinitionRegistry</span> <span class="n">registry</span> <span class="o">=</span> <span class="o">(</span><span class="n">BeanDefinitionRegistry</span><span class="o">)</span> <span class="n">beanFactory</span><span class="o">;</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanFactoryPostProcessor</span><span class="o">&gt;</span> <span class="n">regularPostProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">&gt;</span> <span class="n">registryProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+      <span class="k">for</span> <span class="o">(</span><span class="n">BeanFactoryPostProcessor</span> <span class="n">postProcessor</span> <span class="o">:</span> <span class="n">beanFactoryPostProcessors</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//前面注册的BeanFactoryPostProcessor中，有configurationClassPostProcessor符合这个
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">postProcessor</span> <span class="k">instanceof</span> <span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">BeanDefinitionRegistryPostProcessor</span> <span class="n">registryProcessor</span> <span class="o">=</span>
+                  <span class="o">(</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">)</span> <span class="n">postProcessor</span><span class="o">;</span>
+            <span class="n">registryProcessor</span><span class="o">.</span><span class="na">postProcessBeanDefinitionRegistry</span><span class="o">(</span><span class="n">registry</span><span class="o">);</span>
+            <span class="n">registryProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">registryProcessor</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="o">{</span>
+            <span class="n">regularPostProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">postProcessor</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+
+      <span class="c1">// Do not initialize FactoryBeans here: We need to leave all regular beans
+</span><span class="c1"></span>      <span class="c1">// uninitialized to let the bean factory post-processors apply to them!
+</span><span class="c1"></span>      <span class="c1">// Separate between BeanDefinitionRegistryPostProcessors that implement
+</span><span class="c1"></span>      <span class="c1">// PriorityOrdered, Ordered, and the rest.
+</span><span class="c1"></span>      <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">&gt;</span> <span class="n">currentRegistryProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+      <span class="c1">// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+</span><span class="c1"></span>      <span class="n">String</span><span class="o">[]</span> <span class="n">postProcessorNames</span> <span class="o">=</span>
+            <span class="n">beanFactory</span><span class="o">.</span><span class="na">getBeanNamesForType</span><span class="o">(</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">ppName</span> <span class="o">:</span> <span class="n">postProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">isTypeMatch</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">PriorityOrdered</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="n">processedBeans</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ppName</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="n">sortPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+      <span class="n">registryProcessors</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">);</span>
+      <span class="n">invokeBeanDefinitionRegistryPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">registry</span><span class="o">);</span>
+      <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+
+      <span class="c1">// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+</span><span class="c1"></span>      <span class="n">postProcessorNames</span> <span class="o">=</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">getBeanNamesForType</span><span class="o">(</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">ppName</span> <span class="o">:</span> <span class="n">postProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(!</span><span class="n">processedBeans</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">ppName</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">isTypeMatch</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">Ordered</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+            <span class="n">processedBeans</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ppName</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="n">sortPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+      <span class="n">registryProcessors</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">);</span>
+      <span class="n">invokeBeanDefinitionRegistryPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">registry</span><span class="o">);</span>
+      <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+
+      <span class="c1">// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+</span><span class="c1"></span>      <span class="kt">boolean</span> <span class="n">reiterate</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="k">while</span> <span class="o">(</span><span class="n">reiterate</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">reiterate</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+         <span class="n">postProcessorNames</span> <span class="o">=</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">getBeanNamesForType</span><span class="o">(</span><span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+         <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">ppName</span> <span class="o">:</span> <span class="n">postProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">processedBeans</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">ppName</span><span class="o">))</span> <span class="o">{</span>
+               <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">BeanDefinitionRegistryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+               <span class="n">processedBeans</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ppName</span><span class="o">);</span>
+               <span class="n">reiterate</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+         <span class="n">sortPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+         <span class="n">registryProcessors</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">);</span>
+         <span class="n">invokeBeanDefinitionRegistryPostProcessors</span><span class="o">(</span><span class="n">currentRegistryProcessors</span><span class="o">,</span> <span class="n">registry</span><span class="o">);</span>
+         <span class="n">currentRegistryProcessors</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+      <span class="o">}</span>
+
+      <span class="c1">// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+</span><span class="c1"></span>      <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">registryProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+      <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">regularPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="c1">// Invoke factory processors registered with the context instance.
+</span><span class="c1"></span>      <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">beanFactoryPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Do not initialize FactoryBeans here: We need to leave all regular beans
+</span><span class="c1"></span>   <span class="c1">// uninitialized to let the bean factory post-processors apply to them!
+</span><span class="c1"></span>   <span class="n">String</span><span class="o">[]</span> <span class="n">postProcessorNames</span> <span class="o">=</span>
+         <span class="n">beanFactory</span><span class="o">.</span><span class="na">getBeanNamesForType</span><span class="o">(</span><span class="n">BeanFactoryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+
+   <span class="c1">// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
+</span><span class="c1"></span>   <span class="c1">// Ordered, and the rest.
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanFactoryPostProcessor</span><span class="o">&gt;</span> <span class="n">priorityOrderedPostProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+   <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">orderedPostProcessorNames</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+   <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">nonOrderedPostProcessorNames</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">ppName</span> <span class="o">:</span> <span class="n">postProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">processedBeans</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">ppName</span><span class="o">))</span> <span class="o">{</span>
+         <span class="c1">// skip - already processed in first phase above
+</span><span class="c1"></span>      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">isTypeMatch</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">PriorityOrdered</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+         <span class="n">priorityOrderedPostProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">BeanFactoryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">isTypeMatch</span><span class="o">(</span><span class="n">ppName</span><span class="o">,</span> <span class="n">Ordered</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+         <span class="n">orderedPostProcessorNames</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ppName</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="n">nonOrderedPostProcessorNames</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ppName</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
+</span><span class="c1"></span>   <span class="n">sortPostProcessors</span><span class="o">(</span><span class="n">priorityOrderedPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+   <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">priorityOrderedPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+
+   <span class="c1">// Next, invoke the BeanFactoryPostProcessors that implement Ordered.
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanFactoryPostProcessor</span><span class="o">&gt;</span> <span class="n">orderedPostProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">orderedPostProcessorNames</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">postProcessorName</span> <span class="o">:</span> <span class="n">orderedPostProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">orderedPostProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">postProcessorName</span><span class="o">,</span> <span class="n">BeanFactoryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+   <span class="o">}</span>
+   <span class="n">sortPostProcessors</span><span class="o">(</span><span class="n">orderedPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+   <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">orderedPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+
+   <span class="c1">// Finally, invoke all other BeanFactoryPostProcessors.
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanFactoryPostProcessor</span><span class="o">&gt;</span> <span class="n">nonOrderedPostProcessors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">nonOrderedPostProcessorNames</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">postProcessorName</span> <span class="o">:</span> <span class="n">nonOrderedPostProcessorNames</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">nonOrderedPostProcessors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">postProcessorName</span><span class="o">,</span> <span class="n">BeanFactoryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+   <span class="o">}</span>
+   <span class="n">invokeBeanFactoryPostProcessors</span><span class="o">(</span><span class="n">nonOrderedPostProcessors</span><span class="o">,</span> <span class="n">beanFactory</span><span class="o">);</span>
+
+   <span class="c1">// Clear cached merged bean definitions since the post-processors might have
+</span><span class="c1"></span>   <span class="c1">// modified the original metadata, e.g. replacing placeholders in values...
+</span><span class="c1"></span>   <span class="n">beanFactory</span><span class="o">.</span><span class="na">clearMetadataCache</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>ConfigurationClassPostProcessor的postProcessBeanDefinitionRegistry方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">postProcessBeanDefinitionRegistry</span><span class="o">(</span><span class="n">BeanDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+   <span class="kt">int</span> <span class="n">registryId</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">identityHashCode</span><span class="o">(</span><span class="n">registry</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">registriesPostProcessed</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">registryId</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+            <span class="s">&#34;postProcessBeanDefinitionRegistry already called on this post-processor against &#34;</span> <span class="o">+</span> <span class="n">registry</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">factoriesPostProcessed</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">registryId</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+            <span class="s">&#34;postProcessBeanFactory already called on this post-processor against &#34;</span> <span class="o">+</span> <span class="n">registry</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">registriesPostProcessed</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">registryId</span><span class="o">);</span>
+
+   <span class="n">processConfigBeanDefinitions</span><span class="o">(</span><span class="n">registry</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">processConfigBeanDefinitions</span><span class="o">(</span><span class="n">BeanDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//配置类候选
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">configCandidates</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="c1">//得到注册的所有BeanDefinition的name
+</span><span class="c1"></span>   <span class="n">String</span><span class="o">[]</span> <span class="n">candidateNames</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getBeanDefinitionNames</span><span class="o">();</span>
+
+   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">beanName</span> <span class="o">:</span> <span class="n">candidateNames</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//取得beanDefinition
+</span><span class="c1"></span>      <span class="n">BeanDefinition</span> <span class="n">beanDef</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">(</span><span class="n">beanName</span><span class="o">);</span>
+       <span class="c1">//获取attribute为ConfigurationClassPostProcessor.class.getName() + &#39;.&#39; + configurationClass
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">beanDef</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">CONFIGURATION_CLASS_ATTRIBUTE</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Bean definition has already been processed as a configuration class: &#34;</span> <span class="o">+</span> <span class="n">beanDef</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+       <span class="c1">//检查是否为配置类的候选，并给beanDefinition设置属性lite或full
+</span><span class="c1"></span>      <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">checkConfigurationClassCandidate</span><span class="o">(</span><span class="n">beanDef</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">))</span> <span class="o">{</span>
+         <span class="n">configCandidates</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanDefinitionHolder</span><span class="o">(</span><span class="n">beanDef</span><span class="o">,</span> <span class="n">beanName</span><span class="o">));</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Return immediately if no @Configuration classes were found
+</span><span class="c1"></span>    <span class="c1">//如果没有@Configuration的class
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">configCandidates</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Sort by previously determined @Order value, if applicable
+</span><span class="c1"></span>    <span class="c1">//由@Order排序
+</span><span class="c1"></span>   <span class="n">configCandidates</span><span class="o">.</span><span class="na">sort</span><span class="o">((</span><span class="n">bd1</span><span class="o">,</span> <span class="n">bd2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">getOrder</span><span class="o">(</span><span class="n">bd1</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">());</span>
+      <span class="kt">int</span> <span class="n">i2</span> <span class="o">=</span> <span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">getOrder</span><span class="o">(</span><span class="n">bd2</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">());</span>
+      <span class="k">return</span> <span class="n">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span> <span class="n">i2</span><span class="o">);</span>
+   <span class="o">});</span>
+
+   <span class="c1">// Detect any custom bean name generation strategy supplied through the enclosing application context
+</span><span class="c1"></span>   <span class="n">SingletonBeanRegistry</span> <span class="n">sbr</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">registry</span> <span class="k">instanceof</span> <span class="n">SingletonBeanRegistry</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">sbr</span> <span class="o">=</span> <span class="o">(</span><span class="n">SingletonBeanRegistry</span><span class="o">)</span> <span class="n">registry</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">localBeanNameGeneratorSet</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//BeanName生成器
+</span><span class="c1"></span>         <span class="n">BeanNameGenerator</span> <span class="n">generator</span> <span class="o">=</span> <span class="o">(</span><span class="n">BeanNameGenerator</span><span class="o">)</span> <span class="n">sbr</span><span class="o">.</span><span class="na">getSingleton</span><span class="o">(</span>
+               <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">CONFIGURATION_BEAN_NAME_GENERATOR</span><span class="o">);</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">generator</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">componentScanBeanNameGenerator</span> <span class="o">=</span> <span class="n">generator</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">importBeanNameGenerator</span> <span class="o">=</span> <span class="n">generator</span><span class="o">;</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">environment</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">environment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StandardEnvironment</span><span class="o">();</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Parse each @Configuration class
+</span><span class="c1"></span>    <span class="c1">//创建Configuration类的解析器
+</span><span class="c1"></span>   <span class="n">ConfigurationClassParser</span> <span class="n">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigurationClassParser</span><span class="o">(</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">problemReporter</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">,</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">componentScanBeanNameGenerator</span><span class="o">,</span> <span class="n">registry</span><span class="o">);</span>
+
+   <span class="n">Set</span><span class="o">&lt;</span><span class="n">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">candidates</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">&lt;&gt;(</span><span class="n">configCandidates</span><span class="o">);</span>
+   <span class="n">Set</span><span class="o">&lt;</span><span class="n">ConfigurationClass</span><span class="o">&gt;</span> <span class="n">alreadyParsed</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;(</span><span class="n">configCandidates</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+   <span class="k">do</span> <span class="o">{</span>
+       <span class="c1">//解析
+</span><span class="c1"></span>      <span class="n">parser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">candidates</span><span class="o">);</span>
+       <span class="c1">//验证
+</span><span class="c1"></span>      <span class="n">parser</span><span class="o">.</span><span class="na">validate</span><span class="o">();</span>
+
+       <span class="c1">//获得解析出的ConfigurationClass
+</span><span class="c1"></span>      <span class="n">Set</span><span class="o">&lt;</span><span class="n">ConfigurationClass</span><span class="o">&gt;</span> <span class="n">configClasses</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashSet</span><span class="o">&lt;&gt;(</span><span class="n">parser</span><span class="o">.</span><span class="na">getConfigurationClasses</span><span class="o">());</span>
+       <span class="c1">//排除已经解析过的
+</span><span class="c1"></span>      <span class="n">configClasses</span><span class="o">.</span><span class="na">removeAll</span><span class="o">(</span><span class="n">alreadyParsed</span><span class="o">);</span>
+
+      <span class="c1">// Read the model and create bean definitions based on its content
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">reader</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigurationClassBeanDefinitionReader</span><span class="o">(</span>
+               <span class="n">registry</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">sourceExtractor</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">,</span>
+               <span class="k">this</span><span class="o">.</span><span class="na">importBeanNameGenerator</span><span class="o">,</span> <span class="n">parser</span><span class="o">.</span><span class="na">getImportRegistry</span><span class="o">());</span>
+      <span class="o">}</span>
+       <span class="c1">//再次加载BeanDefinition，引入其中的新Bean
+</span><span class="c1"></span>      <span class="k">this</span><span class="o">.</span><span class="na">reader</span><span class="o">.</span><span class="na">loadBeanDefinitions</span><span class="o">(</span><span class="n">configClasses</span><span class="o">);</span>
+       <span class="c1">//将解析出的ConfigurationClass都加到alreadyParsed中
+</span><span class="c1"></span>      <span class="n">alreadyParsed</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">configClasses</span><span class="o">);</span>
+
+       <span class="c1">//清楚所有元素
+</span><span class="c1"></span>      <span class="n">candidates</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+       <span class="c1">//确认之前的loadBeanDefinitions有没有引入新的
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">registry</span><span class="o">.</span><span class="na">getBeanDefinitionCount</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">candidateNames</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//获取所有BeanDefinition的name
+</span><span class="c1"></span>         <span class="n">String</span><span class="o">[]</span> <span class="n">newCandidateNames</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getBeanDefinitionNames</span><span class="o">();</span>
+         <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">oldCandidateNames</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">candidateNames</span><span class="o">));</span>
+         <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">alreadyParsedClasses</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+         <span class="k">for</span> <span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configurationClass</span> <span class="o">:</span> <span class="n">alreadyParsed</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">alreadyParsedClasses</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">configurationClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">());</span>
+         <span class="o">}</span>
+         <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">candidateName</span> <span class="o">:</span> <span class="n">newCandidateNames</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">oldCandidateNames</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">candidateName</span><span class="o">))</span> <span class="o">{</span>
+               <span class="n">BeanDefinition</span> <span class="n">bd</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">(</span><span class="n">candidateName</span><span class="o">);</span>
+                <span class="c1">//检查是否为配置类候选且没有被解析过
+</span><span class="c1"></span>               <span class="k">if</span> <span class="o">(</span><span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">checkConfigurationClassCandidate</span><span class="o">(</span><span class="n">bd</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">)</span> <span class="o">&amp;&amp;</span>
+                     <span class="o">!</span><span class="n">alreadyParsedClasses</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">bd</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">()))</span> <span class="o">{</span>
+                   <span class="c1">//添加未解析的，进入下一次循环解析
+</span><span class="c1"></span>                  <span class="n">candidates</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanDefinitionHolder</span><span class="o">(</span><span class="n">bd</span><span class="o">,</span> <span class="n">candidateName</span><span class="o">));</span>
+               <span class="o">}</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+         <span class="n">candidateNames</span> <span class="o">=</span> <span class="n">newCandidateNames</span><span class="o">;</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+    <span class="c1">//如果有未解析的
+</span><span class="c1"></span>   <span class="k">while</span> <span class="o">(!</span><span class="n">candidates</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">());</span>
+
+   <span class="c1">// Register the ImportRegistry as a bean in order to support ImportAware @Configuration classes
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">sbr</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">sbr</span><span class="o">.</span><span class="na">containsSingleton</span><span class="o">(</span><span class="n">IMPORT_REGISTRY_BEAN_NAME</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">sbr</span><span class="o">.</span><span class="na">registerSingleton</span><span class="o">(</span><span class="n">IMPORT_REGISTRY_BEAN_NAME</span><span class="o">,</span> <span class="n">parser</span><span class="o">.</span><span class="na">getImportRegistry</span><span class="o">());</span>
+   <span class="o">}</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span> <span class="k">instanceof</span> <span class="n">CachingMetadataReaderFactory</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// Clear cache in externally provided MetadataReaderFactory; this is a no-op
+</span><span class="c1"></span>      <span class="c1">// for a shared cache since it&#39;ll be cleared by the ApplicationContext.
+</span><span class="c1"></span>      <span class="o">((</span><span class="n">CachingMetadataReaderFactory</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">).</span><span class="na">clearCache</span><span class="o">();</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>checkConfigurationClassCandidate方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">checkConfigurationClassCandidate</span><span class="o">(</span>
+      <span class="n">BeanDefinition</span> <span class="n">beanDef</span><span class="o">,</span> <span class="n">MetadataReaderFactory</span> <span class="n">metadataReaderFactory</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">beanDef</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">();</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">className</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">beanDef</span><span class="o">.</span><span class="na">getFactoryMethodName</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="n">AnnotationMetadata</span> <span class="n">metadata</span><span class="o">;</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">beanDef</span> <span class="k">instanceof</span> <span class="n">AnnotatedBeanDefinition</span> <span class="o">&amp;&amp;</span>
+         <span class="n">className</span><span class="o">.</span><span class="na">equals</span><span class="o">(((</span><span class="n">AnnotatedBeanDefinition</span><span class="o">)</span> <span class="n">beanDef</span><span class="o">).</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">()))</span> <span class="o">{</span>
+      <span class="c1">// Can reuse the pre-parsed metadata from the given BeanDefinition...
+</span><span class="c1"></span>      <span class="n">metadata</span> <span class="o">=</span> <span class="o">((</span><span class="n">AnnotatedBeanDefinition</span><span class="o">)</span> <span class="n">beanDef</span><span class="o">).</span><span class="na">getMetadata</span><span class="o">();</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">beanDef</span> <span class="k">instanceof</span> <span class="n">AbstractBeanDefinition</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">AbstractBeanDefinition</span><span class="o">)</span> <span class="n">beanDef</span><span class="o">).</span><span class="na">hasBeanClass</span><span class="o">())</span> <span class="o">{</span>
+      <span class="c1">// Check already loaded Class if present...
+</span><span class="c1"></span>      <span class="c1">// since we possibly can&#39;t even load the class file for this Class.
+</span><span class="c1"></span>      <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">beanClass</span> <span class="o">=</span> <span class="o">((</span><span class="n">AbstractBeanDefinition</span><span class="o">)</span> <span class="n">beanDef</span><span class="o">).</span><span class="na">getBeanClass</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">BeanFactoryPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">beanClass</span><span class="o">)</span> <span class="o">||</span>
+            <span class="n">BeanPostProcessor</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">beanClass</span><span class="o">)</span> <span class="o">||</span>
+            <span class="n">AopInfrastructureBean</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">beanClass</span><span class="o">)</span> <span class="o">||</span>
+            <span class="n">EventListenerFactory</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">beanClass</span><span class="o">))</span> <span class="o">{</span>
+         <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="n">metadata</span> <span class="o">=</span> <span class="n">AnnotationMetadata</span><span class="o">.</span><span class="na">introspect</span><span class="o">(</span><span class="n">beanClass</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="k">try</span> <span class="o">{</span>
+         <span class="n">MetadataReader</span> <span class="n">metadataReader</span> <span class="o">=</span> <span class="n">metadataReaderFactory</span><span class="o">.</span><span class="na">getMetadataReader</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+         <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadataReader</span><span class="o">.</span><span class="na">getAnnotationMetadata</span><span class="o">();</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Could not find class file for introspecting configuration annotations: &#34;</span> <span class="o">+</span>
+                  <span class="n">className</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">config</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="na">getAnnotationAttributes</span><span class="o">(</span><span class="n">Configuration</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+    <span class="c1">//@Configuration注解的情况，设置attribute为full
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">config</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">Boolean</span><span class="o">.</span><span class="na">FALSE</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;proxyBeanMethods&#34;</span><span class="o">)))</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">CONFIGURATION_CLASS_ATTRIBUTE</span><span class="o">,</span> <span class="n">CONFIGURATION_CLASS_FULL</span><span class="o">);</span>
+   <span class="o">}</span>
+    <span class="c1">//有其它的注解如@Component，@ComponentScan，@Import，@ImportSource，@Bean
+</span><span class="c1"></span>    <span class="c1">//并设置attribute为lite
+</span><span class="c1"></span>   <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">config</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">isConfigurationCandidate</span><span class="o">(</span><span class="n">metadata</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">CONFIGURATION_CLASS_ATTRIBUTE</span><span class="o">,</span> <span class="n">CONFIGURATION_CLASS_LITE</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="c1">// It&#39;s a full or lite configuration candidate... Let&#39;s determine the order value, if any.
+</span><span class="c1"></span>   <span class="n">Integer</span> <span class="n">order</span> <span class="o">=</span> <span class="n">getOrder</span><span class="o">(</span><span class="n">metadata</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">order</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">ORDER_ATTRIBUTE</span><span class="o">,</span> <span class="n">order</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>isConfigurationCandidate方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isConfigurationCandidate</span><span class="o">(</span><span class="n">AnnotationMetadata</span> <span class="n">metadata</span><span class="o">)</span> <span class="o">{</span>
+   <span class="c1">// Do not consider an interface or an annotation...
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">metadata</span><span class="o">.</span><span class="na">isInterface</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Any of the typical annotations found?
+</span><span class="c1"></span>    <span class="c1">//遍历candidateIndicators
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">indicator</span> <span class="o">:</span> <span class="n">candidateIndicators</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//metadata是否有这个注解
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">metadata</span><span class="o">.</span><span class="na">isAnnotated</span><span class="o">(</span><span class="n">indicator</span><span class="o">))</span> <span class="o">{</span>
+         <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Finally, let&#39;s look for @Bean methods...
+</span><span class="c1"></span>   <span class="k">try</span> <span class="o">{</span>
+       <span class="c1">//是否有@Bean注解的方法
+</span><span class="c1"></span>      <span class="k">return</span> <span class="n">metadata</span><span class="o">.</span><span class="na">hasAnnotatedMethods</span><span class="o">(</span><span class="n">Bean</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+   <span class="o">}</span>
+   <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+         <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Failed to introspect @Bean methods on class [&#34;</span> <span class="o">+</span> <span class="n">metadata</span><span class="o">.</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;]: &#34;</span> <span class="o">+</span> <span class="n">ex</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中candidateIndicators的内容</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">candidateIndicators</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;(</span><span class="n">8</span><span class="o">);</span>
+
+<span class="kd">static</span> <span class="o">{</span>
+   <span class="n">candidateIndicators</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Component</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+   <span class="n">candidateIndicators</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ComponentScan</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+   <span class="n">candidateIndicators</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Import</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+   <span class="n">candidateIndicators</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ImportResource</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>回到processConfigBeanDefinitions方法，查看parse方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">parse</span><span class="o">(</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">configCandidates</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//遍历每个配置类候选
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">BeanDefinitionHolder</span> <span class="n">holder</span> <span class="o">:</span> <span class="n">configCandidates</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">BeanDefinition</span> <span class="n">bd</span> <span class="o">=</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">();</span>
+      <span class="k">try</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">bd</span> <span class="k">instanceof</span> <span class="n">AnnotatedBeanDefinition</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">parse</span><span class="o">(((</span><span class="n">AnnotatedBeanDefinition</span><span class="o">)</span> <span class="n">bd</span><span class="o">).</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">());</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">bd</span> <span class="k">instanceof</span> <span class="n">AbstractBeanDefinition</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">AbstractBeanDefinition</span><span class="o">)</span> <span class="n">bd</span><span class="o">).</span><span class="na">hasBeanClass</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">parse</span><span class="o">(((</span><span class="n">AbstractBeanDefinition</span><span class="o">)</span> <span class="n">bd</span><span class="o">).</span><span class="na">getBeanClass</span><span class="o">(),</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">());</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="o">{</span>
+            <span class="n">parse</span><span class="o">(</span><span class="n">bd</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">(),</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">());</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">BeanDefinitionStoreException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">throw</span> <span class="k">new</span> <span class="n">BeanDefinitionStoreException</span><span class="o">(</span>
+               <span class="s">&#34;Failed to parse configuration class [&#34;</span> <span class="o">+</span> <span class="n">bd</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="k">this</span><span class="o">.</span><span class="na">deferredImportSelectorHandler</span><span class="o">.</span><span class="na">process</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">parse</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+   <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">className</span><span class="o">,</span> <span class="s">&#34;No bean class name for configuration class bean definition&#34;</span><span class="o">);</span>
+   <span class="n">MetadataReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">.</span><span class="na">getMetadataReader</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+   <span class="n">processConfigurationClass</span><span class="o">(</span><span class="k">new</span> <span class="n">ConfigurationClass</span><span class="o">(</span><span class="n">reader</span><span class="o">,</span> <span class="n">beanName</span><span class="o">),</span> <span class="n">DEFAULT_EXCLUSION_FILTER</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">DEFAULT_EXCLUSION_FILTER</span> <span class="o">=</span> <span class="n">className</span> <span class="o">-&gt;</span>
+      <span class="o">(</span><span class="n">className</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&#34;java.lang.annotation.&#34;</span><span class="o">)</span> <span class="o">||</span> <span class="n">className</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&#34;org.springframework.stereotype.&#34;</span><span class="o">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">processConfigurationClass</span><span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">conditionEvaluator</span><span class="o">.</span><span class="na">shouldSkip</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">ConfigurationPhase</span><span class="o">.</span><span class="na">PARSE_CONFIGURATION</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="n">ConfigurationClass</span> <span class="n">existingClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">existingClass</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">isImported</span><span class="o">())</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">existingClass</span><span class="o">.</span><span class="na">isImported</span><span class="o">())</span> <span class="o">{</span>
+             <span class="c1">//合并Import
+</span><span class="c1"></span>            <span class="n">existingClass</span><span class="o">.</span><span class="na">mergeImportedBy</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="c1">// Otherwise ignore new imported config class; existing non-imported class overrides it.
+</span><span class="c1"></span>         <span class="k">return</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="c1">// Explicit bean definition found, probably replacing an import.
+</span><span class="c1"></span>         <span class="c1">// Let&#39;s remove the old one and go with the new one.
+</span><span class="c1"></span>         <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">knownSuperclasses</span><span class="o">.</span><span class="na">values</span><span class="o">().</span><span class="na">removeIf</span><span class="o">(</span><span class="n">configClass</span><span class="o">::</span><span class="n">equals</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Recursively process the configuration class and its superclass hierarchy.
+</span><span class="c1"></span>    <span class="c1">//可以处理父类
+</span><span class="c1"></span>   <span class="n">SourceClass</span> <span class="n">sourceClass</span> <span class="o">=</span> <span class="n">asSourceClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+   <span class="k">do</span> <span class="o">{</span>
+      <span class="n">sourceClass</span> <span class="o">=</span> <span class="n">doProcessConfigurationClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">while</span> <span class="o">(</span><span class="n">sourceClass</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+
+   <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">configClass</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">processConfigurationClass</span><span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">conditionEvaluator</span><span class="o">.</span><span class="na">shouldSkip</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">ConfigurationPhase</span><span class="o">.</span><span class="na">PARSE_CONFIGURATION</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+    <span class="c1">//从configurationClasses中获取已存在的
+</span><span class="c1"></span>   <span class="n">ConfigurationClass</span> <span class="n">existingClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">existingClass</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">isImported</span><span class="o">())</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">existingClass</span><span class="o">.</span><span class="na">isImported</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">existingClass</span><span class="o">.</span><span class="na">mergeImportedBy</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="c1">// Otherwise ignore new imported config class; existing non-imported class overrides it.
+</span><span class="c1"></span>         <span class="k">return</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="c1">// Explicit bean definition found, probably replacing an import.
+</span><span class="c1"></span>         <span class="c1">// Let&#39;s remove the old one and go with the new one.
+</span><span class="c1"></span>         <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">knownSuperclasses</span><span class="o">.</span><span class="na">values</span><span class="o">().</span><span class="na">removeIf</span><span class="o">(</span><span class="n">configClass</span><span class="o">::</span><span class="n">equals</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Recursively process the configuration class and its superclass hierarchy.
+</span><span class="c1"></span>   <span class="n">SourceClass</span> <span class="n">sourceClass</span> <span class="o">=</span> <span class="n">asSourceClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+   <span class="k">do</span> <span class="o">{</span>
+      <span class="n">sourceClass</span> <span class="o">=</span> <span class="n">doProcessConfigurationClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">while</span> <span class="o">(</span><span class="n">sourceClass</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+
+    <span class="c1">//放入configurationClasses中
+</span><span class="c1"></span>   <span class="k">this</span><span class="o">.</span><span class="na">configurationClasses</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">configClass</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span><span class="lnt">96
+</span><span class="lnt">97
+</span><span class="lnt">98
+</span><span class="lnt">99
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kd">final</span> <span class="n">SourceClass</span> <span class="nf">doProcessConfigurationClass</span><span class="o">(</span>
+      <span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">SourceClass</span> <span class="n">sourceClass</span><span class="o">,</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span>
+      <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+    <span class="c1">//如果有@Component注解
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">isAnnotated</span><span class="o">(</span><span class="n">Component</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+      <span class="c1">// Recursively process any member (nested) classes first
+</span><span class="c1"></span>      <span class="n">processMemberClasses</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Process any @PropertySource annotations
+</span><span class="c1"></span>    <span class="c1">//处理@PropertySource注解
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">AnnotationAttributes</span> <span class="n">propertySource</span> <span class="o">:</span> <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">attributesForRepeatable</span><span class="o">(</span>
+         <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">PropertySources</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+         <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">context</span><span class="o">.</span><span class="na">annotation</span><span class="o">.</span><span class="na">PropertySource</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">environment</span> <span class="k">instanceof</span> <span class="n">ConfigurableEnvironment</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">processPropertySource</span><span class="o">(</span><span class="n">propertySource</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Ignoring @PropertySource annotation on [&#34;</span> <span class="o">+</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span>
+               <span class="s">&#34;]. Reason: Environment must implement ConfigurableEnvironment&#34;</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Process any @ComponentScan annotations
+</span><span class="c1"></span>    <span class="c1">//处理@ComponentScan,@ComponentScans注解
+</span><span class="c1"></span>   <span class="n">Set</span><span class="o">&lt;</span><span class="n">AnnotationAttributes</span><span class="o">&gt;</span> <span class="n">componentScans</span> <span class="o">=</span> <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">attributesForRepeatable</span><span class="o">(</span>
+         <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">ComponentScans</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">ComponentScan</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">componentScans</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
+         <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">conditionEvaluator</span><span class="o">.</span><span class="na">shouldSkip</span><span class="o">(</span><span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">ConfigurationPhase</span><span class="o">.</span><span class="na">REGISTER_BEAN</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">AnnotationAttributes</span> <span class="n">componentScan</span> <span class="o">:</span> <span class="n">componentScans</span><span class="o">)</span> <span class="o">{</span>
+         <span class="c1">// The config class is annotated with @ComponentScan -&gt; perform the scan immediately
+</span><span class="c1"></span>          <span class="c1">//如果有@ComponentScan注解，立即扫描
+</span><span class="c1"></span>         <span class="n">Set</span><span class="o">&lt;</span><span class="n">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">scannedBeanDefinitions</span> <span class="o">=</span>
+               <span class="k">this</span><span class="o">.</span><span class="na">componentScanParser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">componentScan</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">());</span>
+         <span class="c1">// Check the set of scanned definitions for any further config classes and parse recursively if needed
+</span><span class="c1"></span>          <span class="c1">//遍历扫描的BeanDefinition
+</span><span class="c1"></span>         <span class="k">for</span> <span class="o">(</span><span class="n">BeanDefinitionHolder</span> <span class="n">holder</span> <span class="o">:</span> <span class="n">scannedBeanDefinitions</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">BeanDefinition</span> <span class="n">bdCand</span> <span class="o">=</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">().</span><span class="na">getOriginatingBeanDefinition</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">bdCand</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+               <span class="n">bdCand</span> <span class="o">=</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">();</span>
+            <span class="o">}</span>
+             <span class="c1">//如果是配置类
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">checkConfigurationClassCandidate</span><span class="o">(</span><span class="n">bdCand</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">metadataReaderFactory</span><span class="o">))</span> <span class="o">{</span>
+                <span class="c1">//递归解析
+</span><span class="c1"></span>               <span class="n">parse</span><span class="o">(</span><span class="n">bdCand</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">(),</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">());</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Process any @Import annotations
+</span><span class="c1"></span>    <span class="c1">//处理@Import注解
+</span><span class="c1"></span>   <span class="n">processImports</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">,</span> <span class="n">getImports</span><span class="o">(</span><span class="n">sourceClass</span><span class="o">),</span> <span class="n">filter</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+   <span class="c1">// Process any @ImportResource annotations
+</span><span class="c1"></span>    <span class="c1">//处理@ImportResource注解
+</span><span class="c1"></span>   <span class="n">AnnotationAttributes</span> <span class="n">importResource</span> <span class="o">=</span>
+         <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">attributesFor</span><span class="o">(</span><span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">ImportResource</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">importResource</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//获取路径
+</span><span class="c1"></span>      <span class="n">String</span><span class="o">[]</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">importResource</span><span class="o">.</span><span class="na">getStringArray</span><span class="o">(</span><span class="s">&#34;locations&#34;</span><span class="o">);</span>
+       <span class="c1">//获取指定的BeanDefinitionReader类
+</span><span class="c1"></span>      <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">BeanDefinitionReader</span><span class="o">&gt;</span> <span class="n">readerClass</span> <span class="o">=</span> <span class="n">importResource</span><span class="o">.</span><span class="na">getClass</span><span class="o">(</span><span class="s">&#34;reader&#34;</span><span class="o">);</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">resource</span> <span class="o">:</span> <span class="n">resources</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//处理占位符
+</span><span class="c1"></span>         <span class="n">String</span> <span class="n">resolvedResource</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">.</span><span class="na">resolveRequiredPlaceholders</span><span class="o">(</span><span class="n">resource</span><span class="o">);</span>
+          <span class="c1">//添加到ImportedResources中
+</span><span class="c1"></span>         <span class="n">configClass</span><span class="o">.</span><span class="na">addImportedResource</span><span class="o">(</span><span class="n">resolvedResource</span><span class="o">,</span> <span class="n">readerClass</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Process individual @Bean methods
+</span><span class="c1"></span>    <span class="c1">//处理@Bean注解，有@Bean注解的方法都加到configClass的beanMethods中
+</span><span class="c1"></span>   <span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodMetadata</span><span class="o">&gt;</span> <span class="n">beanMethods</span> <span class="o">=</span> <span class="n">retrieveBeanMethodMetadata</span><span class="o">(</span><span class="n">sourceClass</span><span class="o">);</span>
+   <span class="k">for</span> <span class="o">(</span><span class="n">MethodMetadata</span> <span class="n">methodMetadata</span> <span class="o">:</span> <span class="n">beanMethods</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">configClass</span><span class="o">.</span><span class="na">addBeanMethod</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanMethod</span><span class="o">(</span><span class="n">methodMetadata</span><span class="o">,</span> <span class="n">configClass</span><span class="o">));</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Process default methods on interfaces
+</span><span class="c1"></span>    <span class="c1">//处理接口的default方法
+</span><span class="c1"></span>   <span class="n">processInterfaces</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">sourceClass</span><span class="o">);</span>
+
+   <span class="c1">// Process superclass, if any
+</span><span class="c1"></span>    <span class="c1">//处理父类
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">hasSuperClass</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">String</span> <span class="n">superclass</span> <span class="o">=</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getSuperClassName</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">superclass</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">superclass</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&#34;java&#34;</span><span class="o">)</span> <span class="o">&amp;&amp;</span>
+            <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">knownSuperclasses</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">superclass</span><span class="o">))</span> <span class="o">{</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">knownSuperclasses</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">superclass</span><span class="o">,</span> <span class="n">configClass</span><span class="o">);</span>
+         <span class="c1">// Superclass found, return its annotation metadata and recurse
+</span><span class="c1"></span>          <span class="c1">//对应之前的sourceClass的循环，一直解析父类直到没有符合条件的为止
+</span><span class="c1"></span>         <span class="k">return</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getSuperClass</span><span class="o">();</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// No superclass -&gt; processing is complete
+</span><span class="c1"></span>   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="处理内部类">处理内部类</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">processMemberClasses</span><span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">SourceClass</span> <span class="n">sourceClass</span><span class="o">,</span>
+      <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">filter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+    <span class="c1">//获取内部类
+</span><span class="c1"></span>   <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SourceClass</span><span class="o">&gt;</span> <span class="n">memberClasses</span> <span class="o">=</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getMemberClasses</span><span class="o">();</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">memberClasses</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">List</span><span class="o">&lt;</span><span class="n">SourceClass</span><span class="o">&gt;</span> <span class="n">candidates</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">memberClasses</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+       <span class="c1">//遍历内部类，判断是否为配置类，并将满足条件的添加到candidates中
+</span><span class="c1"></span>      <span class="k">for</span> <span class="o">(</span><span class="n">SourceClass</span> <span class="n">memberClass</span> <span class="o">:</span> <span class="n">memberClasses</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//是配置类且不是同一个class
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">ConfigurationClassUtils</span><span class="o">.</span><span class="na">isConfigurationCandidate</span><span class="o">(</span><span class="n">memberClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">())</span> <span class="o">&amp;&amp;</span>
+               <span class="o">!</span><span class="n">memberClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="n">candidates</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">memberClass</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+       <span class="c1">//排序
+</span><span class="c1"></span>      <span class="n">OrderComparator</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">candidates</span><span class="o">);</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">SourceClass</span> <span class="n">candidate</span> <span class="o">:</span> <span class="n">candidates</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">configClass</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">problemReporter</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="k">new</span> <span class="n">CircularImportProblem</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">));</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="c1">//递归处理配置类
+</span><span class="c1"></span>               <span class="n">processConfigurationClass</span><span class="o">(</span><span class="n">candidate</span><span class="o">.</span><span class="na">asConfigClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">),</span> <span class="n">filter</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">finally</span> <span class="o">{</span>
+               <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">pop</span><span class="o">();</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="处理propertysource">处理PropertySource</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">processPropertySource</span><span class="o">(</span><span class="n">AnnotationAttributes</span> <span class="n">propertySource</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+   <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">propertySource</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="n">String</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">propertySource</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;encoding&#34;</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">encoding</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">encoding</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+   <span class="o">}</span>
+    <span class="c1">//获取路径
+</span><span class="c1"></span>   <span class="n">String</span><span class="o">[]</span> <span class="n">locations</span> <span class="o">=</span> <span class="n">propertySource</span><span class="o">.</span><span class="na">getStringArray</span><span class="o">(</span><span class="s">&#34;value&#34;</span><span class="o">);</span>
+   <span class="n">Assert</span><span class="o">.</span><span class="na">isTrue</span><span class="o">(</span><span class="n">locations</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">,</span> <span class="s">&#34;At least one @PropertySource(value) location is required&#34;</span><span class="o">);</span>
+   <span class="kt">boolean</span> <span class="n">ignoreResourceNotFound</span> <span class="o">=</span> <span class="n">propertySource</span><span class="o">.</span><span class="na">getBoolean</span><span class="o">(</span><span class="s">&#34;ignoreResourceNotFound&#34;</span><span class="o">);</span>
+
+   <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">PropertySourceFactory</span><span class="o">&gt;</span> <span class="n">factoryClass</span> <span class="o">=</span> <span class="n">propertySource</span><span class="o">.</span><span class="na">getClass</span><span class="o">(</span><span class="s">&#34;factory&#34;</span><span class="o">);</span>
+   <span class="n">PropertySourceFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="o">(</span><span class="n">factoryClass</span> <span class="o">==</span> <span class="n">PropertySourceFactory</span><span class="o">.</span><span class="na">class</span> <span class="o">?</span>
+         <span class="n">DEFAULT_PROPERTY_SOURCE_FACTORY</span> <span class="o">:</span> <span class="n">BeanUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="n">factoryClass</span><span class="o">));</span>
+
+   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">location</span> <span class="o">:</span> <span class="n">locations</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">try</span> <span class="o">{</span>
+          <span class="c1">//处理占位符
+</span><span class="c1"></span>         <span class="n">String</span> <span class="n">resolvedLocation</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">.</span><span class="na">resolveRequiredPlaceholders</span><span class="o">(</span><span class="n">location</span><span class="o">);</span>
+          <span class="c1">//获取Resource
+</span><span class="c1"></span>         <span class="n">Resource</span> <span class="n">resource</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="n">resolvedLocation</span><span class="o">);</span>
+          <span class="c1">//添加PropertyResource
+</span><span class="c1"></span>         <span class="n">addPropertySource</span><span class="o">(</span><span class="n">factory</span><span class="o">.</span><span class="na">createPropertySource</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="k">new</span> <span class="n">EncodedResource</span><span class="o">(</span><span class="n">resource</span><span class="o">,</span> <span class="n">encoding</span><span class="o">)));</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="o">|</span> <span class="n">FileNotFoundException</span> <span class="o">|</span> <span class="n">UnknownHostException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="c1">// Placeholders not resolvable or resource not found when trying to open it
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">ignoreResourceNotFound</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+               <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Properties location [&#34;</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s">&#34;] not resolvable: &#34;</span> <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="处理import">处理@Import</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">processImports</span><span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">SourceClass</span> <span class="n">currentSourceClass</span><span class="o">,</span>
+      <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SourceClass</span><span class="o">&gt;</span> <span class="n">importCandidates</span><span class="o">,</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">exclusionFilter</span><span class="o">,</span>
+      <span class="kt">boolean</span> <span class="n">checkForCircularImports</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">importCandidates</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">checkForCircularImports</span> <span class="o">&amp;&amp;</span> <span class="n">isChainedImportOnStack</span><span class="o">(</span><span class="n">configClass</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">problemReporter</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="k">new</span> <span class="n">CircularImportProblem</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">));</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+      <span class="k">try</span> <span class="o">{</span>
+         <span class="k">for</span> <span class="o">(</span><span class="n">SourceClass</span> <span class="n">candidate</span> <span class="o">:</span> <span class="n">importCandidates</span><span class="o">)</span> <span class="o">{</span>
+             <span class="c1">//如果是ImportSelector的实现类
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">candidate</span><span class="o">.</span><span class="na">isAssignable</span><span class="o">(</span><span class="n">ImportSelector</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+               <span class="c1">// Candidate class is an ImportSelector -&gt; delegate to it to determine imports
+</span><span class="c1"></span>               <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">candidateClass</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="na">loadClass</span><span class="o">();</span>
+                <span class="c1">//实例化
+</span><span class="c1"></span>               <span class="n">ImportSelector</span> <span class="n">selector</span> <span class="o">=</span> <span class="n">ParserStrategyUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="n">candidateClass</span><span class="o">,</span> <span class="n">ImportSelector</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                     <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+               <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">selectorFilter</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">getExclusionFilter</span><span class="o">();</span>
+               <span class="k">if</span> <span class="o">(</span><span class="n">selectorFilter</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="n">exclusionFilter</span> <span class="o">=</span> <span class="n">exclusionFilter</span><span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">selectorFilter</span><span class="o">);</span>
+               <span class="o">}</span>
+                <span class="c1">//如果是延迟的
+</span><span class="c1"></span>               <span class="k">if</span> <span class="o">(</span><span class="n">selector</span> <span class="k">instanceof</span> <span class="n">DeferredImportSelector</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="k">this</span><span class="o">.</span><span class="na">deferredImportSelectorHandler</span><span class="o">.</span><span class="na">handle</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="o">(</span><span class="n">DeferredImportSelector</span><span class="o">)</span> <span class="n">selector</span><span class="o">);</span>
+               <span class="o">}</span>
+               <span class="k">else</span> <span class="o">{</span>
+                   <span class="c1">//获取要加载的类名
+</span><span class="c1"></span>                  <span class="n">String</span><span class="o">[]</span> <span class="n">importClassNames</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectImports</span><span class="o">(</span><span class="n">currentSourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">());</span>
+                  <span class="n">Collection</span><span class="o">&lt;</span><span class="n">SourceClass</span><span class="o">&gt;</span> <span class="n">importSourceClasses</span> <span class="o">=</span> <span class="n">asSourceClasses</span><span class="o">(</span><span class="n">importClassNames</span><span class="o">,</span> <span class="n">exclusionFilter</span><span class="o">);</span>
+                   <span class="c1">//递归处理@Import
+</span><span class="c1"></span>                  <span class="n">processImports</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">currentSourceClass</span><span class="o">,</span> <span class="n">importSourceClasses</span><span class="o">,</span> <span class="n">exclusionFilter</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+               <span class="o">}</span>
+            <span class="o">}</span>
+             <span class="c1">//如果是ImportBeanDefinitionRegistrar的实现类
+</span><span class="c1"></span>            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">candidate</span><span class="o">.</span><span class="na">isAssignable</span><span class="o">(</span><span class="n">ImportBeanDefinitionRegistrar</span><span class="o">.</span><span class="na">class</span><span class="o">))</span> <span class="o">{</span>
+               <span class="c1">// Candidate class is an ImportBeanDefinitionRegistrar -&gt;
+</span><span class="c1"></span>               <span class="c1">// delegate to it to register additional bean definitions
+</span><span class="c1"></span>               <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">candidateClass</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="na">loadClass</span><span class="o">();</span>
+                <span class="c1">//实例化，并执行aware方法
+</span><span class="c1"></span>               <span class="n">ImportBeanDefinitionRegistrar</span> <span class="n">registrar</span> <span class="o">=</span>
+                     <span class="n">ParserStrategyUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="n">candidateClass</span><span class="o">,</span> <span class="n">ImportBeanDefinitionRegistrar</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                           <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+                <span class="c1">//在configClass的map importBeanDefinitionRegistrars中放入key为registrar，value为metadata
+</span><span class="c1"></span>               <span class="n">configClass</span><span class="o">.</span><span class="na">addImportBeanDefinitionRegistrar</span><span class="o">(</span><span class="n">registrar</span><span class="o">,</span> <span class="n">currentSourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">());</span>
+            <span class="o">}</span>
+             <span class="c1">//其它情况，按@Configuration处理
+</span><span class="c1"></span>            <span class="k">else</span> <span class="o">{</span>
+               <span class="c1">// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar -&gt;
+</span><span class="c1"></span>               <span class="c1">// process it as an @Configuration class
+</span><span class="c1"></span>               <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">registerImport</span><span class="o">(</span>
+                     <span class="n">currentSourceClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">(),</span> <span class="n">candidate</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">());</span>
+                <span class="c1">//递归处理配置类
+</span><span class="c1"></span>               <span class="n">processConfigurationClass</span><span class="o">(</span><span class="n">candidate</span><span class="o">.</span><span class="na">asConfigClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">),</span> <span class="n">exclusionFilter</span><span class="o">);</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">BeanDefinitionStoreException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">throw</span> <span class="k">new</span> <span class="n">BeanDefinitionStoreException</span><span class="o">(</span>
+               <span class="s">&#34;Failed to process import candidates for configuration class [&#34;</span> <span class="o">+</span>
+               <span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">finally</span> <span class="o">{</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">importStack</span><span class="o">.</span><span class="na">pop</span><span class="o">();</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="处理接口">处理接口</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">processInterfaces</span><span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">SourceClass</span> <span class="n">sourceClass</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+   <span class="k">for</span> <span class="o">(</span><span class="n">SourceClass</span> <span class="n">ifc</span> <span class="o">:</span> <span class="n">sourceClass</span><span class="o">.</span><span class="na">getInterfaces</span><span class="o">())</span> <span class="o">{</span>
+       <span class="c1">//检索@Bean注解的方法
+</span><span class="c1"></span>      <span class="n">Set</span><span class="o">&lt;</span><span class="n">MethodMetadata</span><span class="o">&gt;</span> <span class="n">beanMethods</span> <span class="o">=</span> <span class="n">retrieveBeanMethodMetadata</span><span class="o">(</span><span class="n">ifc</span><span class="o">);</span>
+      <span class="k">for</span> <span class="o">(</span><span class="n">MethodMetadata</span> <span class="n">methodMetadata</span> <span class="o">:</span> <span class="n">beanMethods</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//如果不是抽象的
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(!</span><span class="n">methodMetadata</span><span class="o">.</span><span class="na">isAbstract</span><span class="o">())</span> <span class="o">{</span>
+            <span class="c1">// A default method or other concrete method on a Java 8+ interface...
+</span><span class="c1"></span>             <span class="c1">//添加到configClass的beanMethods中
+</span><span class="c1"></span>            <span class="n">configClass</span><span class="o">.</span><span class="na">addBeanMethod</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanMethod</span><span class="o">(</span><span class="n">methodMetadata</span><span class="o">,</span> <span class="n">configClass</span><span class="o">));</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+       <span class="c1">//递归
+</span><span class="c1"></span>      <span class="n">processInterfaces</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">ifc</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="加载beandefinition到spring">加载BeanDefinition到Spring</h5>
+<p>回到processConfigBeanDefinitions，之前处理了各种注解，并在configClass中设了值，然后要将各种结果加载到spring中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java">	<span class="k">this</span><span class="o">.</span><span class="na">reader</span><span class="o">.</span><span class="na">loadBeanDefinitions</span><span class="o">(</span><span class="n">configClasses</span><span class="o">);</span>
+	<span class="n">alreadyParsed</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">configClasses</span><span class="o">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">loadBeanDefinitions</span><span class="o">(</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">ConfigurationClass</span><span class="o">&gt;</span> <span class="n">configurationModel</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">TrackedConditionEvaluator</span> <span class="n">trackedConditionEvaluator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TrackedConditionEvaluator</span><span class="o">();</span>
+    <span class="c1">//遍历传入的configClasses
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">ConfigurationClass</span> <span class="n">configClass</span> <span class="o">:</span> <span class="n">configurationModel</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">//加载配置类
+</span><span class="c1"></span>      <span class="n">loadBeanDefinitionsForConfigurationClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">trackedConditionEvaluator</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">loadBeanDefinitionsForConfigurationClass</span><span class="o">(</span>
+      <span class="n">ConfigurationClass</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">TrackedConditionEvaluator</span> <span class="n">trackedConditionEvaluator</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">trackedConditionEvaluator</span><span class="o">.</span><span class="na">shouldSkip</span><span class="o">(</span><span class="n">configClass</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">configClass</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">beanName</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">containsBeanDefinition</span><span class="o">(</span><span class="n">beanName</span><span class="o">))</span> <span class="o">{</span>
+         <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">removeBeanDefinition</span><span class="o">(</span><span class="n">beanName</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">importRegistry</span><span class="o">.</span><span class="na">removeImportingClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">());</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+    <span class="c1">//如果是被导入的
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">isImported</span><span class="o">())</span> <span class="o">{</span>
+       <span class="c1">//注册@Configuration注解的类本身
+</span><span class="c1"></span>      <span class="n">registerBeanDefinitionForImportedConfigurationClass</span><span class="o">(</span><span class="n">configClass</span><span class="o">);</span>
+   <span class="o">}</span>
+    <span class="c1">//获取之前处理@Bean注解时添加到beanMethods中的beanMethod，加载到spring中
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">BeanMethod</span> <span class="n">beanMethod</span> <span class="o">:</span> <span class="n">configClass</span><span class="o">.</span><span class="na">getBeanMethods</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">loadBeanDefinitionsForBeanMethod</span><span class="o">(</span><span class="n">beanMethod</span><span class="o">);</span>
+   <span class="o">}</span>
+
+    <span class="c1">//加载@ImportResource的资源文件
+</span><span class="c1"></span>   <span class="n">loadBeanDefinitionsFromImportedResources</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getImportedResources</span><span class="o">());</span>
+    <span class="c1">//调用每个ImportBeanDefinitionRegistrar的registerBeanDefinition方法注册beanDefinition
+</span><span class="c1"></span>   <span class="n">loadBeanDefinitionsFromRegistrars</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getImportBeanDefinitionRegistrars</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">loadBeanDefinitionsForBeanMethod</span><span class="o">(</span><span class="n">BeanMethod</span> <span class="n">beanMethod</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">ConfigurationClass</span> <span class="n">configClass</span> <span class="o">=</span> <span class="n">beanMethod</span><span class="o">.</span><span class="na">getConfigurationClass</span><span class="o">();</span>
+   <span class="n">MethodMetadata</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">beanMethod</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">();</span>
+   <span class="n">String</span> <span class="n">methodName</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="na">getMethodName</span><span class="o">();</span>
+
+   <span class="c1">// Do we need to mark the bean as skipped by its condition?
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">conditionEvaluator</span><span class="o">.</span><span class="na">shouldSkip</span><span class="o">(</span><span class="n">metadata</span><span class="o">,</span> <span class="n">ConfigurationPhase</span><span class="o">.</span><span class="na">REGISTER_BEAN</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">configClass</span><span class="o">.</span><span class="na">skippedBeanMethods</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">methodName</span><span class="o">);</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">skippedBeanMethods</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">methodName</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="n">AnnotationAttributes</span> <span class="n">bean</span> <span class="o">=</span> <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">attributesFor</span><span class="o">(</span><span class="n">metadata</span><span class="o">,</span> <span class="n">Bean</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">Assert</span><span class="o">.</span><span class="na">state</span><span class="o">(</span><span class="n">bean</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&#34;No @Bean annotation attributes&#34;</span><span class="o">);</span>
+
+   <span class="c1">// Consider name and any aliases
+</span><span class="c1"></span>    <span class="c1">//获取names
+</span><span class="c1"></span>   <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">names</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">bean</span><span class="o">.</span><span class="na">getStringArray</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">)));</span>
+    <span class="c1">//用第一个name作为beanName，如果names为空则使用方法名
+</span><span class="c1"></span>   <span class="n">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="o">(!</span><span class="n">names</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">?</span> <span class="n">names</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">0</span><span class="o">)</span> <span class="o">:</span> <span class="n">methodName</span><span class="o">);</span>
+
+   <span class="c1">// Register aliases even when overridden
+</span><span class="c1"></span>    <span class="c1">//注册别名
+</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">alias</span> <span class="o">:</span> <span class="n">names</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">registerAlias</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">alias</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Has this effectively been overridden before (e.g. via XML)?
+</span><span class="c1"></span>    <span class="c1">//是否被定义过
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">isOverriddenByExistingDefinition</span><span class="o">(</span><span class="n">beanMethod</span><span class="o">,</span> <span class="n">beanName</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">beanName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">beanMethod</span><span class="o">.</span><span class="na">getConfigurationClass</span><span class="o">().</span><span class="na">getBeanName</span><span class="o">()))</span> <span class="o">{</span>
+         <span class="k">throw</span> <span class="k">new</span> <span class="n">BeanDefinitionStoreException</span><span class="o">(</span><span class="n">beanMethod</span><span class="o">.</span><span class="na">getConfigurationClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">().</span><span class="na">getDescription</span><span class="o">(),</span>
+               <span class="n">beanName</span><span class="o">,</span> <span class="s">&#34;Bean name derived from @Bean method &#39;&#34;</span> <span class="o">+</span> <span class="n">beanMethod</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getMethodName</span><span class="o">()</span> <span class="o">+</span>
+               <span class="s">&#34;&#39; clashes with bean name for containing configuration class; please make those names unique!&#34;</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="n">ConfigurationClassBeanDefinition</span> <span class="n">beanDef</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigurationClassBeanDefinition</span><span class="o">(</span><span class="n">configClass</span><span class="o">,</span> <span class="n">metadata</span><span class="o">);</span>
+   <span class="n">beanDef</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sourceExtractor</span><span class="o">.</span><span class="na">extractSource</span><span class="o">(</span><span class="n">metadata</span><span class="o">,</span> <span class="n">configClass</span><span class="o">.</span><span class="na">getResource</span><span class="o">()));</span>
+
+    <span class="c1">//是否为static
+</span><span class="c1"></span>   <span class="k">if</span> <span class="o">(</span><span class="n">metadata</span><span class="o">.</span><span class="na">isStatic</span><span class="o">())</span> <span class="o">{</span>
+      <span class="c1">// static @Bean method
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">StandardAnnotationMetadata</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">beanDef</span><span class="o">.</span><span class="na">setBeanClass</span><span class="o">(((</span><span class="n">StandardAnnotationMetadata</span><span class="o">)</span> <span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">()).</span><span class="na">getIntrospectedClass</span><span class="o">());</span>
+      <span class="o">}</span>
+      <span class="k">else</span> <span class="o">{</span>
+         <span class="n">beanDef</span><span class="o">.</span><span class="na">setBeanClassName</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">());</span>
+      <span class="o">}</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setUniqueFactoryMethodName</span><span class="o">(</span><span class="n">methodName</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="c1">// instance @Bean method
+</span><span class="c1"></span>      <span class="n">beanDef</span><span class="o">.</span><span class="na">setFactoryBeanName</span><span class="o">(</span><span class="n">configClass</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">());</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setUniqueFactoryMethodName</span><span class="o">(</span><span class="n">methodName</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">metadata</span> <span class="k">instanceof</span> <span class="n">StandardMethodMetadata</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setResolvedFactoryMethod</span><span class="o">(((</span><span class="n">StandardMethodMetadata</span><span class="o">)</span> <span class="n">metadata</span><span class="o">).</span><span class="na">getIntrospectedMethod</span><span class="o">());</span>
+   <span class="o">}</span>
+
+    <span class="c1">//设置构造函数注入的autowire模式
+</span><span class="c1"></span>   <span class="n">beanDef</span><span class="o">.</span><span class="na">setAutowireMode</span><span class="o">(</span><span class="n">AbstractBeanDefinition</span><span class="o">.</span><span class="na">AUTOWIRE_CONSTRUCTOR</span><span class="o">);</span>
+    <span class="c1">//设置跳过检查
+</span><span class="c1"></span>   <span class="n">beanDef</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">beans</span><span class="o">.</span><span class="na">factory</span><span class="o">.</span><span class="na">annotation</span><span class="o">.</span><span class="na">RequiredAnnotationBeanPostProcessor</span><span class="o">.</span>
+         <span class="n">SKIP_REQUIRED_CHECK_ATTRIBUTE</span><span class="o">,</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">TRUE</span><span class="o">);</span>
+
+    <span class="c1">//处理注解，如@Lazy，@DependsOn，@Role，@Description并给beanDefinition设值
+</span><span class="c1"></span>   <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">processCommonDefinitionAnnotations</span><span class="o">(</span><span class="n">beanDef</span><span class="o">,</span> <span class="n">metadata</span><span class="o">);</span>
+
+    <span class="c1">//设置autowire模式
+</span><span class="c1"></span>   <span class="n">Autowire</span> <span class="n">autowire</span> <span class="o">=</span> <span class="n">bean</span><span class="o">.</span><span class="na">getEnum</span><span class="o">(</span><span class="s">&#34;autowire&#34;</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">autowire</span><span class="o">.</span><span class="na">isAutowire</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setAutowireMode</span><span class="o">(</span><span class="n">autowire</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+   <span class="o">}</span>
+
+    <span class="c1">//设置autowireCandidate
+</span><span class="c1"></span>   <span class="kt">boolean</span> <span class="n">autowireCandidate</span> <span class="o">=</span> <span class="n">bean</span><span class="o">.</span><span class="na">getBoolean</span><span class="o">(</span><span class="s">&#34;autowireCandidate&#34;</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(!</span><span class="n">autowireCandidate</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setAutowireCandidate</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+   <span class="o">}</span>
+
+    <span class="c1">//设置initMethod
+</span><span class="c1"></span>   <span class="n">String</span> <span class="n">initMethodName</span> <span class="o">=</span> <span class="n">bean</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;initMethod&#34;</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">initMethodName</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setInitMethodName</span><span class="o">(</span><span class="n">initMethodName</span><span class="o">);</span>
+   <span class="o">}</span>
+
+    <span class="c1">//设置destroyMethod
+</span><span class="c1"></span>   <span class="n">String</span> <span class="n">destroyMethodName</span> <span class="o">=</span> <span class="n">bean</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;destroyMethod&#34;</span><span class="o">);</span>
+   <span class="n">beanDef</span><span class="o">.</span><span class="na">setDestroyMethodName</span><span class="o">(</span><span class="n">destroyMethodName</span><span class="o">);</span>
+
+   <span class="c1">// Consider scoping
+</span><span class="c1"></span>    <span class="c1">//处理@Scope注解
+</span><span class="c1"></span>   <span class="n">ScopedProxyMode</span> <span class="n">proxyMode</span> <span class="o">=</span> <span class="n">ScopedProxyMode</span><span class="o">.</span><span class="na">NO</span><span class="o">;</span>
+   <span class="n">AnnotationAttributes</span> <span class="n">attributes</span> <span class="o">=</span> <span class="n">AnnotationConfigUtils</span><span class="o">.</span><span class="na">attributesFor</span><span class="o">(</span><span class="n">metadata</span><span class="o">,</span> <span class="n">Scope</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">attributes</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">beanDef</span><span class="o">.</span><span class="na">setScope</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;value&#34;</span><span class="o">));</span>
+      <span class="n">proxyMode</span> <span class="o">=</span> <span class="n">attributes</span><span class="o">.</span><span class="na">getEnum</span><span class="o">(</span><span class="s">&#34;proxyMode&#34;</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">proxyMode</span> <span class="o">==</span> <span class="n">ScopedProxyMode</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">)</span> <span class="o">{</span>
+         <span class="n">proxyMode</span> <span class="o">=</span> <span class="n">ScopedProxyMode</span><span class="o">.</span><span class="na">NO</span><span class="o">;</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+
+   <span class="c1">// Replace the original bean definition with the target one, if necessary
+</span><span class="c1"></span>    <span class="c1">//如果有必要，取代原始的BeanDefinition
+</span><span class="c1"></span>   <span class="n">BeanDefinition</span> <span class="n">beanDefToRegister</span> <span class="o">=</span> <span class="n">beanDef</span><span class="o">;</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">proxyMode</span> <span class="o">!=</span> <span class="n">ScopedProxyMode</span><span class="o">.</span><span class="na">NO</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">BeanDefinitionHolder</span> <span class="n">proxyDef</span> <span class="o">=</span> <span class="n">ScopedProxyCreator</span><span class="o">.</span><span class="na">createScopedProxy</span><span class="o">(</span>
+            <span class="k">new</span> <span class="n">BeanDefinitionHolder</span><span class="o">(</span><span class="n">beanDef</span><span class="o">,</span> <span class="n">beanName</span><span class="o">),</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">,</span>
+            <span class="n">proxyMode</span> <span class="o">==</span> <span class="n">ScopedProxyMode</span><span class="o">.</span><span class="na">TARGET_CLASS</span><span class="o">);</span>
+      <span class="n">beanDefToRegister</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigurationClassBeanDefinition</span><span class="o">(</span>
+            <span class="o">(</span><span class="n">RootBeanDefinition</span><span class="o">)</span> <span class="n">proxyDef</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">(),</span> <span class="n">configClass</span><span class="o">,</span> <span class="n">metadata</span><span class="o">);</span>
+   <span class="o">}</span>
+
+   <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;Registering bean definition for @Bean method %s.%s()&#34;</span><span class="o">,</span>
+            <span class="n">configClass</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getClassName</span><span class="o">(),</span> <span class="n">beanName</span><span class="o">));</span>
+   <span class="o">}</span>
+    <span class="c1">//注册BeanDefinition
+</span><span class="c1"></span>   <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">registerBeanDefinition</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">beanDefToRegister</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">loadBeanDefinitionsFromImportedResources</span><span class="o">(</span>
+      <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">BeanDefinitionReader</span><span class="o">&gt;&gt;</span> <span class="n">importedResources</span><span class="o">)</span> <span class="o">{</span>
+
+   <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?&gt;,</span> <span class="n">BeanDefinitionReader</span><span class="o">&gt;</span> <span class="n">readerInstanceCache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+
+   <span class="n">importedResources</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">resource</span><span class="o">,</span> <span class="n">readerClass</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="c1">// Default reader selection necessary?
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">BeanDefinitionReader</span><span class="o">.</span><span class="na">class</span> <span class="o">==</span> <span class="n">readerClass</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">//.groovy文件
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">endsWithIgnoreCase</span><span class="o">(</span><span class="n">resource</span><span class="o">,</span> <span class="s">&#34;.groovy&#34;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// When clearly asking for Groovy, that&#39;s what they&#39;ll get...
+</span><span class="c1"></span>            <span class="n">readerClass</span> <span class="o">=</span> <span class="n">GroovyBeanDefinitionReader</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+         <span class="o">}</span>
+         <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// Primarily &#34;.xml&#34; files but for any other extension as well
+</span><span class="c1"></span>            <span class="n">readerClass</span> <span class="o">=</span> <span class="n">XmlBeanDefinitionReader</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+
+       <span class="c1">//从缓存中获取BeanDefinitionReader
+</span><span class="c1"></span>      <span class="n">BeanDefinitionReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="n">readerInstanceCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">readerClass</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">reader</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// Instantiate the specified BeanDefinitionReader
+</span><span class="c1"></span>             <span class="c1">//创建reader
+</span><span class="c1"></span>            <span class="n">reader</span> <span class="o">=</span> <span class="n">readerClass</span><span class="o">.</span><span class="na">getConstructor</span><span class="o">(</span><span class="n">BeanDefinitionRegistry</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">newInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+            <span class="c1">// Delegate the current ResourceLoader to it if possible
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">reader</span> <span class="k">instanceof</span> <span class="n">AbstractBeanDefinitionReader</span><span class="o">)</span> <span class="o">{</span>
+               <span class="n">AbstractBeanDefinitionReader</span> <span class="n">abdr</span> <span class="o">=</span> <span class="o">((</span><span class="n">AbstractBeanDefinitionReader</span><span class="o">)</span> <span class="n">reader</span><span class="o">);</span>
+               <span class="n">abdr</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">);</span>
+               <span class="n">abdr</span><span class="o">.</span><span class="na">setEnvironment</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">);</span>
+            <span class="o">}</span>
+             <span class="c1">//添加到reader缓存
+</span><span class="c1"></span>            <span class="n">readerInstanceCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">readerClass</span><span class="o">,</span> <span class="n">reader</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+                  <span class="s">&#34;Could not instantiate BeanDefinitionReader class [&#34;</span> <span class="o">+</span> <span class="n">readerClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">);</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+
+      <span class="c1">// TODO SPR-6310: qualify relative path locations as done in AbstractContextLoader.modifyLocations
+</span><span class="c1"></span>       <span class="c1">//加载resource中内容
+</span><span class="c1"></span>      <span class="n">reader</span><span class="o">.</span><span class="na">loadBeanDefinitions</span><span class="o">(</span><span class="n">resource</span><span class="o">);</span>
+   <span class="o">});</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
